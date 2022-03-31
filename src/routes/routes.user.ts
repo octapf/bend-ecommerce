@@ -9,9 +9,7 @@ router.route(Endpoints.home).get(userControllers.getHome)
 
 router.route(Endpoints.signup).post(userControllers.signup)
 
-router
-	.route(Endpoints.signin)
-	.post(JWTMiddleware._verify, userControllers.signin)
+router.route(Endpoints.signin).post(userControllers.signin)
 
 router
 	.route(Endpoints.users)

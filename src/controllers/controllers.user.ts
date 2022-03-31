@@ -2,6 +2,7 @@ import express from 'express'
 import User from '../models/models.users'
 import { IUser } from '../interfaces/IUser'
 import { JWTMiddleware } from '../middleware/middleware.jwt'
+import { userMiddleware } from '../middleware/middleware.user'
 
 export namespace userControllers {
 	/**
@@ -24,7 +25,7 @@ export namespace userControllers {
 		req: express.Request,
 		res: express.Response
 	) => {
-		const users = await User.find()
+		const users = await User.find().select('-password')
 
 		res.status(200).json(users)
 	}
@@ -50,10 +51,10 @@ export namespace userControllers {
 			if (!user) return res.status(404).json({ msg: 'User not found' })
 
 			res.status(200).json(user)
-		} catch (error: any) {
+		} catch (error) {
 			console.error(error)
 
-			res.status(500).json({ Error: error.message })
+			res.status(500).json({ msg: error })
 		}
 	}
 
@@ -63,7 +64,33 @@ export namespace userControllers {
 	 * @param req
 	 * @param res
 	 */
-	export const signin = (req: express.Request, res: express.Response) => {}
+	export const signin = async (req: express.Request, res: express.Response) => {
+		try {
+			if (!req.body.email || !req.body.password)
+				return res.status(400).json({ msg: 'Invalid request' })
+			const { email, password } = req.body
+
+			const user = await User.findOne({ email })
+
+			if (!user) return res.status(404).json({ msg: 'User not found' })
+
+			if (email !== user.email)
+				return res.status(400).json({ msg: 'Invalid email or password' })
+
+			const isValidate = await user.validatePassword(password)
+
+			if (!isValidate)
+				return res.status(400).json({ msg: 'Invalid email or password' })
+
+			const token = JWTMiddleware._sign(user._id)
+
+			res.header('token', token).status(200).json(user)
+		} catch (error) {
+			console.error(error)
+
+			res.status(500).json({ msg: error })
+		}
+	}
 
 	/**
 	 * ! signup endpoint
@@ -72,12 +99,12 @@ export namespace userControllers {
 	 * @param res {express.Response}
 	 */
 	export const signup = async (req: express.Request, res: express.Response) => {
-		if (!req.body.username || !req.body.email || !req.body.password)
+		if (!req.body.name || !req.body.email || !req.body.password)
 			return res.status(400).json({ msg: 'Invalid request' })
 		try {
 			//TODO check if exists in DB
 			const user: IUser = new User({
-				username: req.body.username,
+				name: req.body.name,
 				email: req.body.email,
 				password: req.body.password,
 			})
@@ -86,13 +113,15 @@ export namespace userControllers {
 
 			const token = JWTMiddleware._sign(user._id)
 
+			await user.hashPassword(user.password)
+
 			const savedUser = await user.save()
 
 			res.header('token', token).status(200).json(savedUser)
 		} catch (error) {
 			console.error(error)
 
-			res.status(400).json({ Error: error })
+			res.status(500).json({ msg: error })
 		}
 	}
 }

@@ -4,14 +4,16 @@
 
 - GET - /
 - POST - /signup - signup
-- POST - /signin - @protected/signin
+- POST - /signin - signin
 - GET - /users - @protected/getUsers
 - GET - /users/:id - @protected/getUserById
 
 ## Incoming features
 
 - add expiration to JWT
+- add signin endpoint 🆗
 - add getUserById endpoint 🆗
 - add deleteUserById endpoint
 - add updateUserById endpoint
 - add generate userName Middleware
+- add RegEx for password
