@@ -4,4 +4,5 @@ export enum Endpoints {
 	signup = '/signup',
 	users = '/users',
 	userById = '/users/:id',
+	validateUsername = '/users/validateUsername',
 }

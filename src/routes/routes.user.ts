@@ -15,6 +15,8 @@ router
 	.route(Endpoints.users)
 	.get(JWTMiddleware._verify, userControllers.getUsers)
 
+router.route(Endpoints.validateUsername).post(userControllers.validateUsername)
+
 router
 	.route(Endpoints.userById)
 	.get(JWTMiddleware._verify, userControllers.getUserById)

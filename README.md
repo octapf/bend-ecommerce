@@ -15,5 +15,6 @@
 - add getUserById endpoint 🆗
 - add deleteUserById endpoint
 - add updateUserById endpoint
+- add validateUsername endpoint
 - add generate userName Middleware
 - add RegEx for password
