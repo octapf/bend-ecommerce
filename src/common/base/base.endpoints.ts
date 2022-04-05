@@ -7,5 +7,7 @@ export enum Endpoints {
 	userFirstName = '/users/:id/firstName',
 	userLastName = '/users/:id/lastName',
 	userPassword = '/users/:id/password',
+	userEmail = '/users/:id/email',
+	username = '/users/:id/username',
 	validateUsername = '/users/validateUsername',
 }

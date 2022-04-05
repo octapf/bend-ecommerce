@@ -34,4 +34,12 @@ router
 	.route(Endpoints.userPassword)
 	.put(JWTMiddleware._verify, userControllers.updateUserPassword)
 
+router
+	.route(Endpoints.userEmail)
+	.put(JWTMiddleware._verify, userControllers.updateUserEmail)
+
+router
+	.route(Endpoints.username)
+	.put(JWTMiddleware._verify, userControllers.updateUsername)
+
 export default router

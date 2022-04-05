@@ -3,7 +3,7 @@ import User from '../models/models.users'
 import { IUser } from '../models/interfaces/interface.user'
 import { JWTMiddleware } from '../middleware/middleware.jwt'
 import { usernameMiddleware } from '../middleware/middleware.username'
-import { userDTO, userDTOManager } from '../models/dto/dto.user'
+import { userEmailMiddleware } from '../middleware/middleware.userEmail'
 
 export namespace userControllers {
 	/**
@@ -114,6 +114,13 @@ export namespace userControllers {
 		//TODO create regex
 		if (req.body.password.length < 8)
 			return res.status(400).json({ msg: 'Invalid password' })
+
+		const isEmailAvailable: boolean =
+			await userEmailMiddleware.validateUserEmail(req.body.email)
+
+		if (!isEmailAvailable)
+			return res.status(400).json({ msg: 'User email already exists' })
+
 		try {
 			const user: IUser = new User({
 				name: req.body.name,
@@ -168,8 +175,6 @@ export namespace userControllers {
 				return res
 					.status(200)
 					.json({ msg: 'Username available', isAvailable: true })
-
-			// TODO generate alternative usernames array with middleware
 
 			const usernameAlternatives: string[] =
 				await usernameMiddleware.generateUsername(3, username)
@@ -232,6 +237,8 @@ export namespace userControllers {
 
 			const user = await User.findById(userId)
 
+			if (!user) return res.status(404).json({ msg: 'User not found' })
+
 			user.name.firstName = firstName
 
 			const savedUser = await user.save()
@@ -265,13 +272,15 @@ export namespace userControllers {
 
 			const user = await User.findById(userId)
 
+			if (!user) return res.status(404).json({ msg: 'User not found' })
+
 			user.name.lastName = lastName
 
 			const savedUser = await user.save()
 
-			res.send(savedUser)
+			res.json(savedUser)
 		} catch (error) {
-			res.send(error)
+			res.status(500).json({ msg: error })
 		}
 	}
 
@@ -302,15 +311,103 @@ export namespace userControllers {
 
 			const user = await User.findById(userId)
 
+			if (!user) return res.status(404).json({ msg: 'User not found' })
+
 			user.password = password
 
 			await user.hashPassword(user.password)
 
 			const savedUser = await user.save()
 
-			res.send(savedUser)
+			res.json(savedUser)
 		} catch (error) {
-			res.send(error)
+			res.status(500).json({ msg: error })
+		}
+	}
+
+	/**
+	 * ! Define update user email by id endpoint
+	 * * octapf - 04/04/2022
+	 * @param req
+	 * @param res
+	 */
+	export const updateUserEmail = async (
+		req: express.Request,
+		res: express.Response
+	) => {
+		try {
+			if (
+				!req.params.id ||
+				Object.keys(req.body).length === 0 ||
+				!req.body.email
+			)
+				return res.status(400).json({ msg: 'Invalid request' })
+
+			const userId: string = req.params.id
+			const { email } = req.body
+
+			const user = await User.findById(userId)
+
+			if (!user) return res.status(404).json({ msg: 'User not found' })
+
+			const isEmailAvailable: boolean =
+				await userEmailMiddleware.validateUserEmail(email)
+
+			if (!isEmailAvailable)
+				return res.status(400).json({ msg: 'User email already exists' })
+
+			user.email = email
+
+			const savedUser = await user.save()
+
+			res.json(savedUser)
+		} catch (error) {
+			console.error(error)
+
+			res.status(500).json({ msg: error })
+		}
+	}
+
+	/**
+	 * ! Define update username by id endpoint
+	 * * octapf - 04/04/2022
+	 * @param req
+	 * @param res
+	 */
+	export const updateUsername = async (
+		req: express.Request,
+		res: express.Response
+	) => {
+		try {
+			if (
+				!req.params.id ||
+				Object.keys(req.body).length === 0 ||
+				!req.body.username
+			)
+				return res.status(400).json({ msg: 'Invalid request' })
+
+			const userId: string = req.params.id
+			const { username } = req.body
+
+			const user = await User.findById(userId)
+
+			if (!user) return res.status(404).json({ msg: 'User not found' })
+
+			const isUsernameAvailable: boolean =
+				await usernameMiddleware.validateUsername(username)
+
+			if (!isUsernameAvailable)
+				return res.status(400).json({ msg: 'Username already exists' })
+
+			user.username = username
+
+			const savedUser = await user.save()
+
+			res.json(savedUser)
+		} catch (error) {
+			console.error(error)
+
+			res.status(500).json({ msg: error })
 		}
 	}
 }
