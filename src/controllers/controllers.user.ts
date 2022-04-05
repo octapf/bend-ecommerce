@@ -1,8 +1,9 @@
 import express from 'express'
 import User from '../models/models.users'
-import { IUser } from '../interfaces/IUser'
+import { IUser } from '../models/interfaces/interface.user'
 import { JWTMiddleware } from '../middleware/middleware.jwt'
-import { userMiddleware } from '../middleware/middleware.user'
+import { usernameMiddleware } from '../middleware/middleware.username'
+import { userDTO, userDTOManager } from '../models/dto/dto.user'
 
 export namespace userControllers {
 	/**
@@ -40,10 +41,9 @@ export namespace userControllers {
 		req: express.Request,
 		res: express.Response
 	) => {
-		if (!req.body.userId)
-			return res.status(400).json({ msg: 'Invalid request' })
+		const userId = req.params.id
 
-		const { userId } = req.body
+		if (!userId) return res.status(400).json({ msg: 'Invalid request' })
 
 		try {
 			const user = await User.findById(userId)
@@ -66,7 +66,11 @@ export namespace userControllers {
 	 */
 	export const signin = async (req: express.Request, res: express.Response) => {
 		try {
-			if (!req.body.email || !req.body.password)
+			if (
+				!req.body.email ||
+				!req.body.password ||
+				Object.keys(req.body).length === 0
+			)
 				return res.status(400).json({ msg: 'Invalid request' })
 			const { email, password } = req.body
 
@@ -99,7 +103,12 @@ export namespace userControllers {
 	 * @param res {express.Response}
 	 */
 	export const signup = async (req: express.Request, res: express.Response) => {
-		if (!req.body.name || !req.body.email || !req.body.password)
+		if (
+			!req.body.name ||
+			!req.body.email ||
+			!req.body.password ||
+			Object.keys(req.body).length === 0
+		)
 			return res.status(400).json({ msg: 'Invalid request' })
 
 		//TODO create regex
@@ -119,8 +128,8 @@ export namespace userControllers {
 			await user.hashPassword(user.password)
 
 			const usernameAlternatives: string[] =
-				await userMiddleware.generateUsernameMiddleware(
-					3,
+				await usernameMiddleware.generateUsername(
+					1,
 					user.name.firstName,
 					user.name.lastName
 				)
@@ -147,7 +156,7 @@ export namespace userControllers {
 		req: express.Request,
 		res: express.Response
 	) => {
-		if (!req.body.username)
+		if (!req.body.username || Object.keys(req.body).length === 0)
 			return res.status(400).json({ msg: 'Invalid request' })
 
 		const username: string = req.body.username
@@ -163,7 +172,7 @@ export namespace userControllers {
 			// TODO generate alternative usernames array with middleware
 
 			const usernameAlternatives: string[] =
-				await userMiddleware.generateUsernameMiddleware(3, username)
+				await usernameMiddleware.generateUsername(3, username)
 
 			return res.status(200).json({
 				msg: 'Username already exists',
@@ -173,6 +182,135 @@ export namespace userControllers {
 		} catch (error) {
 			console.error(error)
 			return res.status(500).json({ msg: error })
+		}
+	}
+
+	/**
+	 * ! Define delete user by id endpoint
+	 * * octapf - 04/04/2022
+	 * @param req
+	 * @param res
+	 */
+	export const deleteUserById = async (
+		req: express.Request,
+		res: express.Response
+	) => {
+		try {
+			const userId: string = req.params.id
+
+			const userDeleted = await User.findByIdAndDelete(userId)
+
+			if (!userDeleted) return res.status(404).json({ msg: 'User not found' })
+
+			res.status(200).json(userDeleted)
+		} catch (error) {
+			console.error(error)
+			res.status(500).json({ msg: error })
+		}
+	}
+
+	/**
+	 * ! Define update user firstName by id endpoint
+	 * * octapf - 04/04/2022
+	 * @param req
+	 * @param res
+	 */
+	export const updateUserFirstName = async (
+		req: express.Request,
+		res: express.Response
+	) => {
+		try {
+			if (
+				!req.params.id ||
+				Object.keys(req.body).length === 0 ||
+				!req.body.firstName
+			)
+				return res.status(400).json({ msg: 'Invalid request' })
+
+			const userId: string = req.params.id
+			const { firstName } = req.body
+
+			const user = await User.findById(userId)
+
+			user.name.firstName = firstName
+
+			const savedUser = await user.save()
+
+			res.send(savedUser)
+		} catch (error) {
+			res.send(error)
+		}
+	}
+
+	/**
+	 * ! Define update user lastName by id endpoint
+	 * * octapf - 04/04/2022
+	 * @param req
+	 * @param res
+	 */
+	export const updateUserLastName = async (
+		req: express.Request,
+		res: express.Response
+	) => {
+		try {
+			if (
+				!req.params.id ||
+				Object.keys(req.body).length === 0 ||
+				!req.body.lastName
+			)
+				return res.status(400).json({ msg: 'Invalid request' })
+
+			const userId: string = req.params.id
+			const { lastName } = req.body
+
+			const user = await User.findById(userId)
+
+			user.name.lastName = lastName
+
+			const savedUser = await user.save()
+
+			res.send(savedUser)
+		} catch (error) {
+			res.send(error)
+		}
+	}
+
+	/**
+	 * ! Define update user password by id endpoint
+	 * * octapf - 04/04/2022
+	 * @param req
+	 * @param res
+	 */
+	export const updateUserPassword = async (
+		req: express.Request,
+		res: express.Response
+	) => {
+		try {
+			if (
+				!req.params.id ||
+				Object.keys(req.body).length === 0 ||
+				!req.body.password
+			)
+				return res.status(400).json({ msg: 'Invalid request' })
+
+			//TODO create regex
+			if (req.body.password.length < 8)
+				return res.status(400).json({ msg: 'Invalid password' })
+
+			const userId: string = req.params.id
+			const { password } = req.body
+
+			const user = await User.findById(userId)
+
+			user.password = password
+
+			await user.hashPassword(user.password)
+
+			const savedUser = await user.save()
+
+			res.send(savedUser)
+		} catch (error) {
+			res.send(error)
 		}
 	}
 }

@@ -1,7 +1,7 @@
 import User from '../models/models.users'
 
-export namespace userMiddleware {
-	export const generateUsernameMiddleware = async (
+export namespace usernameMiddleware {
+	export const generateUsername = async (
 		quantity: number,
 		firstInput: string,
 		secondInput?: string
@@ -9,13 +9,15 @@ export namespace userMiddleware {
 		const usernameAlternatives: string[] = []
 
 		for (let i = 0; i < quantity; i++) {
-			const randomNumber = (Math.random() * 1000000).toString().slice(0, 6)
+			const randomNumber = Math.floor(Math.random() * 1000000)
+				.toString()
+				.slice(0, 6)
 
 			const username = secondInput
 				? firstInput.toLowerCase() + secondInput.toLowerCase() + randomNumber
 				: firstInput.toLowerCase() + randomNumber
 
-			const isAvailable = await validateUsernameMiddleware(username)
+			const isAvailable = await validateUsername(username)
 
 			if (isAvailable) usernameAlternatives.push(username)
 			if (!isAvailable) i--
@@ -23,7 +25,7 @@ export namespace userMiddleware {
 
 		return usernameAlternatives
 	}
-	export const validateUsernameMiddleware = async (
+	export const validateUsername = async (
 		username: string
 	): Promise<boolean> => {
 		try {

@@ -20,5 +20,18 @@ router.route(Endpoints.validateUsername).post(userControllers.validateUsername)
 router
 	.route(Endpoints.userById)
 	.get(JWTMiddleware._verify, userControllers.getUserById)
+	.delete(JWTMiddleware._verify, userControllers.deleteUserById)
+
+router
+	.route(Endpoints.userFirstName)
+	.put(JWTMiddleware._verify, userControllers.updateUserFirstName)
+
+router
+	.route(Endpoints.userLastName)
+	.put(JWTMiddleware._verify, userControllers.updateUserLastName)
+
+router
+	.route(Endpoints.userPassword)
+	.put(JWTMiddleware._verify, userControllers.updateUserPassword)
 
 export default router

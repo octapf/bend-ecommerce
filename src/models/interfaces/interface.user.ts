@@ -1,8 +1,8 @@
 import { Document } from 'mongoose'
-import { Name } from './interface.name'
+import { IName } from './interface.name'
 
 export interface IUser extends Document {
-	name: Name
+	name: IName
 	username: string
 	email: string
 	password: string
