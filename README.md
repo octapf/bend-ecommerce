@@ -10,8 +10,8 @@
 
 ## Incoming features
 
-- add expiration to JWT
-- add refresh JWT
+### Endpoints
+
 - add signin endpoint 🆗
 - add getUserById endpoint 🆗
 - add deleteUserById endpoint 🆗
@@ -21,9 +21,27 @@
 - add updateUserPassword endpoint 🆗
 - add updateUserUsername endpoint 🆗
 - add validateUsername endpoint 🆗
+- add validateUserEmail endpoint
+
+### Middlewares
+
 - add generate userName Middleware 🆗
-- add RegEx for password
+- add validate userEmail Middleware 🆗
+- add JWT middleware 🆗
+- add expiration to JWT
+- add refresh JWT
+
+### Validation
+
+- add RegExs Enum
 - Error messages Enum
 - Success messages Enum
-- DTO Generator function for request bodies
+
+### Documentation
+
 - integrate swagger
+- document all code
+
+### Functionalities
+
+- DTO Generator function for request bodies

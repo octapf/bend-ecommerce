@@ -1,3 +1,7 @@
+/**
+ * ! Define User endpoints
+ * * octapf - 06/04/2022
+ */
 export enum Endpoints {
 	home = '/',
 	signin = '/signin',
