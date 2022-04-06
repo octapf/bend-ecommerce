@@ -5,27 +5,30 @@ import bcrypt from 'bcryptjs'
  * ! Define User schema
  * * octapf - 31/03/2022
  */
-const userSchema = new mongoose.Schema({
-	name: {
-		firstName: { type: String, required: [true, 'Firstname is required'] },
-		lastName: { type: String, required: [true, 'Lastname is required'] },
+const userSchema = new mongoose.Schema(
+	{
+		name: {
+			firstName: { type: String, required: [true, 'Firstname is required'] },
+			lastName: { type: String, required: [true, 'Lastname is required'] },
+		},
+		username: {
+			type: String,
+			required: [true, 'Username is required'],
+			unique: true,
+		},
+		email: {
+			type: String,
+			required: [true, 'Email is required'],
+			unique: true,
+		},
+		password: {
+			type: String,
+			required: [true, 'Password is required'],
+			minlength: 6,
+		},
 	},
-	username: {
-		type: String,
-		required: [true, 'Username is required'],
-		unique: true,
-	},
-	email: {
-		type: String,
-		required: [true, 'Email is required'],
-		unique: true,
-	},
-	password: {
-		type: String,
-		required: [true, 'Password is required'],
-		minlength: 6,
-	},
-})
+	{ timestamps: true }
+)
 
 userSchema.methods.hashPassword = async function (
 	password: string
