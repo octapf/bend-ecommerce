@@ -14,7 +14,7 @@
 
 #### models.user
 
-- add name<object> {firstName<string>, lastName<string>} field
+- add name[object] {firstName<string>, lastName<string>} field
 - add username<string> field
 - add email<string> field
 - add password<string> field
