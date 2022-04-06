@@ -14,14 +14,14 @@
 
 #### models.user
 
-- add name[object] {firstName<string>, lastName<string>} field
-- add username<string> field
-- add email<string> field
-- add password<string> field
-- add birthdate<date> field
-- add phone<array> field
-- add address<array> field
-- add timestamps<option> field 🆗
+- add name [object] {firstName [string], lastName [string]} field
+- add username [string] field
+- add email [string] field
+- add password [string] field
+- add birthdate [date] field
+- add phone [array] field
+- add address [array] field
+- add timestamps [option] field 🆗
 
 ### Endpoints
 
