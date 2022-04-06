@@ -34,6 +34,14 @@ router
 router.route(Endpoints.validateUsername).post(userControllers.validateUsername)
 
 /**
+ * ! Post Validate user email
+ * * octapf - 06/04/2022
+ */
+router
+	.route(Endpoints.validateUserEmail)
+	.post(userControllers.validateUserEmail)
+
+/**
  * ! Get user by id
  * * octapf - 06/04/2022
  */

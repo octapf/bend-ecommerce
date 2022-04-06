@@ -119,7 +119,7 @@ export namespace userControllers {
 			await userEmailMiddleware.validateUserEmail(req.body.email)
 
 		if (!isEmailAvailable)
-			return res.status(400).json({ msg: 'User email already exists' })
+			return res.status(409).json({ msg: 'User email already exists' })
 
 		try {
 			const user: IUser = new User({
@@ -127,8 +127,6 @@ export namespace userControllers {
 				email: req.body.email,
 				password: req.body.password,
 			})
-
-			if (!user) return res.status(400).json({ msg: 'Invalid user' })
 
 			const token = JWTMiddleware._sign(user._id)
 
@@ -179,10 +177,43 @@ export namespace userControllers {
 			const usernameAlternatives: string[] =
 				await usernameMiddleware.generateUsername(3, username)
 
-			return res.status(200).json({
+			return res.status(409).json({
 				msg: 'Username already exists',
 				isAvailable: false,
 				usernameAlternatives,
+			})
+		} catch (error) {
+			console.error(error)
+			return res.status(500).json({ msg: error })
+		}
+	}
+
+	/**
+	 * ! Define validateUserEmail endpoint
+	 * * octapf - 06/04/2022
+	 * @param req
+	 * @param res
+	 */
+	export const validateUserEmail = async (
+		req: express.Request,
+		res: express.Response
+	) => {
+		if (!req.body.email || Object.keys(req.body).length === 0)
+			return res.status(400).json({ msg: 'Invalid request' })
+
+		const email: string = req.body.email
+
+		try {
+			const userFound = await User.findOne({ email })
+
+			if (!userFound)
+				return res
+					.status(200)
+					.json({ msg: 'Email available', isAvailable: true })
+
+			return res.status(409).json({
+				msg: 'Email already exists',
+				isAvailable: false,
 			})
 		} catch (error) {
 			console.error(error)
@@ -354,7 +385,7 @@ export namespace userControllers {
 				await userEmailMiddleware.validateUserEmail(email)
 
 			if (!isEmailAvailable)
-				return res.status(400).json({ msg: 'User email already exists' })
+				return res.status(409).json({ msg: 'User email already exists' })
 
 			user.email = email
 
@@ -397,7 +428,7 @@ export namespace userControllers {
 				await usernameMiddleware.validateUsername(username)
 
 			if (!isUsernameAvailable)
-				return res.status(400).json({ msg: 'Username already exists' })
+				return res.status(409).json({ msg: 'Username already exists' })
 
 			user.username = username
 

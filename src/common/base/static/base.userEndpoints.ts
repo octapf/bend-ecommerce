@@ -14,4 +14,5 @@ export enum Endpoints {
 	userEmail = '/users/:id/email',
 	username = '/users/:id/username',
 	validateUsername = '/users/validateUsername',
+	validateUserEmail = '/users/validateUserEmail',
 }
