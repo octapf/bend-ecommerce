@@ -9,7 +9,7 @@ export const createServer = (): express.Application => {
 	app.use(morgan('dev'))
 	app.use('/api/', userRoutes)
 
-	app.set('port', 3000)
+	app.set('port', 5000)
 
 	return app
 }

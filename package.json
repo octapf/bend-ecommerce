@@ -6,7 +6,7 @@
 	"scripts": {
 		"server": "concurrently \"tsc -w\" \"nodemon backend/dist/app.js\"",
 		"client": "npm start --prefix frontend/",
-		"dev": "concurrently \"tsc -w\" \"nodemon backend/dist/app.js\""
+		"dev": "concurrently \"tsc -w\" \"nodemon backend/dist/app.js\" \"npm start --prefix frontend/\" "
 	},
 	"keywords": [],
 	"author": "",

@@ -12,7 +12,7 @@ const createServer = () => {
     app.use(express_1.default.json());
     app.use((0, morgan_1.default)('dev'));
     app.use('/api/', routes_user_1.default);
-    app.set('port', 3000);
+    app.set('port', 5000);
     return app;
 };
 exports.createServer = createServer;
