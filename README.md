@@ -3,10 +3,18 @@
 ## Endpoints
 
 - GET - /
-- POST - /signup - signup
-- POST - /signin - signin
-- GET - /users - @protected/getUsers
-- GET - /users/:id - @protected/getUserById
+- POST - /signup
+- POST - /signin
+- GET - /users - @protected
+- GET - /users/:id - @protected
+- DELETE - /users/:id - @protected
+- PUT - /users/:id/firstName - @protected
+- PUT - /users/:id/lastName - @protected
+- PUT - /users/:id/password - @protected
+- PUT - /users/:id/email - @protected
+- PUT - /users/:id/username - @protected
+- POST - /users/validateUsername
+- POST - /users/validateUserEmail
 
 ## Incoming features
 
